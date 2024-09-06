@@ -1,0 +1,36 @@
+--- a/net/minecraft/world/item/alchemy/Potion.java
++++ b/net/minecraft/world/item/alchemy/Potion.java
+@@ -24,6 +_,7 @@
+     private final String name;
+     private final List<MobEffectInstance> effects;
+     private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
++    private java.util.function.BooleanSupplier requiredFlag = () -> true;
+ 
+     public Potion(MobEffectInstance... p_43487_) {
+         this(null, p_43487_);
+@@ -42,6 +_,25 @@
+     @Override
+     public FeatureFlagSet requiredFeatures() {
+         return this.requiredFeatures;
++    }
++
++    @Override
++    public boolean isEnabled(FeatureFlagSet p_249172_) {
++        return FeatureElement.super.isEnabled(p_249172_) && requiredFlag.getAsBoolean();
++    }
++
++    /**
++     * Sets the required flag for this potion to be enabled.
++     * <p>
++     * Best used in conjunction with server config files.
++     * <p>
++     * The value of the provided supplier must be kept in sync with the server and client at all times.
++     *
++     * @param requiredFlag Flag which must result in {@code true} in order for this potion to be enabled.
++     */
++    public Potion requiredFlag(java.util.function.BooleanSupplier requiredFlag) {
++        this.requiredFlag = requiredFlag;
++        return this;
+     }
+ 
+     public static String getName(Optional<Holder<Potion>> p_330503_, String p_43493_) {

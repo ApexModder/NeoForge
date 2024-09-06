@@ -12,11 +12,20 @@
      public static final ResourceLocation BASE_ATTACK_DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
      public static final ResourceLocation BASE_ATTACK_SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
      public static final int DEFAULT_MAX_STACK_SIZE = 64;
-@@ -89,12 +_,13 @@
+@@ -71,6 +_,7 @@
+     @Nullable
+     private String descriptionId;
+     private final FeatureFlagSet requiredFeatures;
++    private final java.util.function.BooleanSupplier requiredFlag;
+ 
+     public static int getId(Item p_41394_) {
+         return p_41394_ == null ? 0 : BuiltInRegistries.ITEM.getId(p_41394_);
+@@ -89,12 +_,14 @@
          this.components = p_41383_.buildAndValidateComponents();
          this.craftingRemainingItem = p_41383_.craftingRemainingItem;
          this.requiredFeatures = p_41383_.requiredFeatures;
 -        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        this.requiredFlag = p_41383_.requiredFlag;
 +        if (SharedConstants.IS_RUNNING_IN_IDE && false) {
              String s = this.getClass().getSimpleName();
              if (!s.endsWith("Item")) {
@@ -142,7 +151,7 @@
      }
  
      public ItemStack getDefaultInstance() {
-@@ -341,13 +_,22 @@
+@@ -341,13 +_,28 @@
          return this.requiredFeatures;
      }
  
@@ -155,6 +164,11 @@
 +    public void initializeClient(java.util.function.Consumer<net.neoforged.neoforge.client.extensions.common.IClientItemExtensions> consumer) {
 +    }
 +
++    @Override
++    public boolean isEnabled(FeatureFlagSet p_249172_) {
++        return FeatureElement.super.isEnabled(p_249172_) && requiredFlag.getAsBoolean();
++    }
++
 +    public static class Properties implements net.neoforged.neoforge.common.extensions.IItemPropertiesExtensions {
          private static final Interner<DataComponentMap> COMPONENT_INTERNER = Interners.newStrongInterner();
          @Nullable
@@ -163,10 +177,11 @@
          Item craftingRemainingItem;
          FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
 +        private boolean canRepair = true;
++        private java.util.function.BooleanSupplier requiredFlag = () -> true;
  
          public Item.Properties food(FoodProperties p_41490_) {
              return this.component(DataComponents.FOOD, p_41490_);
-@@ -381,12 +_,18 @@
+@@ -381,12 +_,32 @@
              return this.component(DataComponents.JUKEBOX_PLAYABLE, new JukeboxPlayable(new EitherHolder<>(p_350862_), true));
          }
  
@@ -180,6 +195,20 @@
              return this;
          }
  
++        /**
++         * Sets the required flag for this item to be enabled.
++         * <p>
++         * Best used in conjunction with server config files.
++         * <p>
++         * The value of the provided supplier must be kept in sync with the server and client at all times.
++         *
++         * @param requiredFlag Flag which must result in {@code true} in order for this item to be enabled.
++         */
++        public Item.Properties requiredFlag(java.util.function.BooleanSupplier requiredFlag) {
++            this.requiredFlag = requiredFlag;
++            return this;
++        }
++
          public <T> Item.Properties component(DataComponentType<T> p_330871_, T p_330323_) {
 +            net.neoforged.neoforge.common.CommonHooks.validateComponent(p_330323_);
              if (this.components == null) {

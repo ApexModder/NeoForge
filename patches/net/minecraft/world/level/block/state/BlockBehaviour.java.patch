@@ -1,8 +1,18 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -111,6 +_,17 @@
+@@ -98,6 +_,7 @@
+     protected final BlockBehaviour.Properties properties;
+     @Nullable
+     protected ResourceKey<LootTable> drops;
++    private final java.util.function.BooleanSupplier requiredFlag;
+ 
+     public BlockBehaviour(BlockBehaviour.Properties p_60452_) {
+         this.hasCollision = p_60452_.hasCollision;
+@@ -110,7 +_,19 @@
+         this.jumpFactor = p_60452_.jumpFactor;
          this.dynamicShape = p_60452_.dynamicShape;
          this.requiredFeatures = p_60452_.requiredFeatures;
++        this.requiredFlag = p_60452_.requiredFlag;
          this.properties = p_60452_;
 +        final ResourceKey<LootTable> lootTableCache = p_60452_.drops;
 +        if (lootTableCache != null) {
@@ -66,7 +76,7 @@
      protected SoundType getSoundType(BlockState p_320941_) {
          return this.soundType;
      }
-@@ -393,6 +_,13 @@
+@@ -393,6 +_,18 @@
          return this.properties.destroyTime;
      }
  
@@ -76,6 +86,11 @@
 +
 +    // Neo: Holds the loot table for this block's drops. Used for getLootTable method.
 +    private final java.util.function.Supplier<ResourceKey<LootTable>> lootTableSupplier;
++
++    @Override
++    public boolean isEnabled(FeatureFlagSet p_249172_) {
++        return FeatureElement.super.isEnabled(p_249172_) && requiredFlag.getAsBoolean();
++    }
 +
      public abstract static class BlockStateBase extends StateHolder<Block, BlockState> {
          private final int lightEmission;
@@ -150,6 +165,14 @@
          BlockBehaviour.StatePredicate isRedstoneConductor = (p_284888_, p_284889_, p_284890_) -> p_284888_.isCollisionShapeFullBlock(p_284889_, p_284890_);
          BlockBehaviour.StatePredicate isSuffocating = (p_284885_, p_284886_, p_284887_) -> p_284885_.blocksMotion()
                  && p_284885_.isCollisionShapeFullBlock(p_284886_, p_284887_);
+@@ -974,6 +_,7 @@
+         FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
+         @Nullable
+         BlockBehaviour.OffsetFunction offsetFunction;
++        private java.util.function.BooleanSupplier requiredFlag = () -> true;
+ 
+         private Properties() {
+         }
 @@ -1105,9 +_,15 @@
              return this;
          }
@@ -167,3 +190,24 @@
          }
  
          public BlockBehaviour.Properties ignitedByLava() {
+@@ -1227,6 +_,20 @@
+ 
+         public BlockBehaviour.Properties replaceable() {
+             this.replaceable = true;
++            return this;
++        }
++
++        /**
++         * Sets the required flag for this block to be enabled.
++         * <p>
++         * Best used in conjunction with server config files.
++         * <p>
++         * The value of the provided supplier must be kept in sync with the server and client at all times.
++         *
++         * @param requiredFlag Flag which must result in {@code true} in order for this block to be enabled.
++         */
++        public BlockBehaviour.Properties requiredFlag(java.util.function.BooleanSupplier requiredFlag) {
++            this.requiredFlag = requiredFlag;
+             return this;
+         }
+     }

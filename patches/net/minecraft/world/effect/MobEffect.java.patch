@@ -9,6 +9,14 @@
      public static final Codec<Holder<MobEffect>> CODEC = BuiltInRegistries.MOB_EFFECT.holderByNameCodec();
      public static final StreamCodec<RegistryFriendlyByteBuf, Holder<MobEffect>> STREAM_CODEC = ByteBufCodecs.holderRegistry(Registries.MOB_EFFECT);
      private static final int AMBIENT_ALPHA = Mth.floor(38.25F);
+@@ -48,6 +_,7 @@
+     private int blendDurationTicks;
+     private Optional<SoundEvent> soundOnAdded = Optional.empty();
+     private FeatureFlagSet requiredFeatures = FeatureFlags.VANILLA_SET;
++    private java.util.function.BooleanSupplier requiredFlag = () -> true;
+ 
+     protected MobEffect(MobEffectCategory p_19451_, int p_19452_) {
+         this.category = p_19451_;
 @@ -130,6 +_,18 @@
          return this;
      }
@@ -28,11 +36,30 @@
      public MobEffect setBlendDuration(int p_316265_) {
          this.blendDurationTicks = p_316265_;
          return this;
-@@ -181,8 +_,24 @@
+@@ -181,8 +_,43 @@
          return this.requiredFeatures;
      }
  
 -    static record AttributeTemplate(ResourceLocation id, double amount, AttributeModifier.Operation operation) {
++    @Override
++    public boolean isEnabled(FeatureFlagSet p_249172_) {
++        return FeatureElement.super.isEnabled(p_249172_) && requiredFlag.getAsBoolean();
++    }
++
++    /**
++     * Sets the required flag for this effect to be enabled.
++     * <p>
++     * Best used in conjunction with server config files.
++     * <p>
++     * The value of the provided supplier must be kept in sync with the server and client at all times.
++     *
++     * @param requiredFlag Flag which must result in {@code true} in order for this effect to be enabled.
++     */
++    public MobEffect requiredFlag(java.util.function.BooleanSupplier requiredFlag) {
++        this.requiredFlag = requiredFlag;
++        return this;
++    }
++
 +    /**
 +     * Neo: Allowing mods to define client behavior for their MobEffects
 +     * @deprecated Use {@link net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent} instead
