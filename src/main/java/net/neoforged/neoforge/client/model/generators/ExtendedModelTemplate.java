@@ -375,7 +375,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
          * @return this builder
          * @throws NullPointerException if {@code texture} is {@code null}
          */
-        public ElementBuilder textureAll(String texture) {
+        public ElementBuilder textureAll(TextureSlot texture) {
             return allFaces(addTexture(texture));
         }
 
@@ -387,7 +387,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
          * @return this builder
          * @throws NullPointerException if {@code texture} is {@code null}
          */
-        public ElementBuilder texture(String texture) {
+        public ElementBuilder texture(TextureSlot texture) {
             return faces(addTexture(texture));
         }
 
@@ -399,7 +399,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
          * @return this builder
          * @throws NullPointerException if {@code texture} is {@code null}
          */
-        public ElementBuilder cube(String texture) {
+        public ElementBuilder cube(TextureSlot texture) {
             return allFaces(addTexture(texture).andThen((dir, f) -> f.cullface(dir)));
         }
 
@@ -452,7 +452,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
             return this;
         }
 
-        private static BiConsumer<Direction, ElementBuilder.FaceBuilder> addTexture(String texture) {
+        private static BiConsumer<Direction, ElementBuilder.FaceBuilder> addTexture(TextureSlot texture) {
             return ($, f) -> f.texture(texture);
         }
 
@@ -489,7 +489,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
             private Direction cullface;
             private int tintindex = -1;
             @Nullable
-            private String texture = null;
+            private TextureSlot texture = null;
             private float @Nullable[] uvs;
             private FaceRotation rotation = FaceRotation.ZERO;
             private int color = 0xFFFFFFFF;
@@ -518,7 +518,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
              * @return this builder
              * @throws NullPointerException if {@code texture} is {@code null}
              */
-            public ElementBuilder.FaceBuilder texture(String texture) {
+            public ElementBuilder.FaceBuilder texture(TextureSlot texture) {
                 Preconditions.checkNotNull(texture, "Texture must not be null");
                 this.texture = texture;
                 return this;
@@ -582,7 +582,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
                 if (this.texture == null) {
                     throw new IllegalStateException("A model face must have a texture");
                 }
-                return new BlockElementFace(cullface, tintindex, texture, new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
+                return new BlockElementFace(cullface, tintindex, texture.toString(), new BlockFaceUV(uvs, rotation.rotation), new ExtraFaceData(this.color, this.blockLight, this.skyLight, this.hasAmbientOcclusion), new MutableObject<>());
             }
 
             public ElementBuilder end() {
