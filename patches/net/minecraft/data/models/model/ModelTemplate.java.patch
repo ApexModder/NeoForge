@@ -1,11 +1,11 @@
 --- a/net/minecraft/data/models/model/ModelTemplate.java
 +++ b/net/minecraft/data/models/model/ModelTemplate.java
-@@ -14,7 +_,7 @@
- import net.minecraft.resources.ResourceLocation;
- import net.minecraft.world.level.block.Block;
- 
--public class ModelTemplate {
-+public class ModelTemplate implements net.neoforged.neoforge.common.extensions.IModelTemplateExtension {
-     public final Optional<ResourceLocation> model;
-     public final Set<TextureSlot> requiredSlots;
-     public final Optional<String> suffix;
+@@ -79,4 +_,8 @@
+     public interface JsonFactory {
+         JsonObject create(ResourceLocation p_266987_, Map<TextureSlot, ResourceLocation> p_266933_);
+     }
++
++    public net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate.Builder extend() {
++        return net.neoforged.neoforge.client.model.generators.ExtendedModelTemplate.Builder.of(this);
++    }
+ }

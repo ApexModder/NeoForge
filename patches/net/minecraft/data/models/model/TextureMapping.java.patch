@@ -1,0 +1,14 @@
+--- a/net/minecraft/data/models/model/TextureMapping.java
++++ b/net/minecraft/data/models/model/TextureMapping.java
+@@ -401,4 +_,11 @@
+         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(p_125746_);
+         return resourcelocation.withPath(p_252192_ -> "item/" + p_252192_ + p_125747_);
+     }
++
++    public TextureMapping copy() {
++        TextureMapping texturemapping = new TextureMapping();
++        texturemapping.slots.putAll(this.slots);
++        texturemapping.forcedSlots.addAll(this.forcedSlots);
++        return texturemapping;
++    }
+ }

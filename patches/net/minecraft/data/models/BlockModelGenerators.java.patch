@@ -1,14 +1,5 @@
 --- a/net/minecraft/data/models/BlockModelGenerators.java
 +++ b/net/minecraft/data/models/BlockModelGenerators.java
-@@ -82,7 +_,7 @@
- import net.minecraft.world.level.block.state.properties.Tilt;
- import net.minecraft.world.level.block.state.properties.WallSide;
- 
--public class BlockModelGenerators {
-+public class BlockModelGenerators implements net.neoforged.neoforge.common.extensions.IBlockModelGenerators {
-     public final Consumer<BlockStateGenerator> blockStateOutput;
-     public final BiConsumer<ResourceLocation, Supplier<JsonElement>> modelOutput;
-     public final Consumer<Item> skippedAutoModelsOutput;
 @@ -207,12 +_,23 @@
          return createRotatedVariant(p_176180_, p_176181_, resourcelocation).with(createRotatedPillar());
      }
