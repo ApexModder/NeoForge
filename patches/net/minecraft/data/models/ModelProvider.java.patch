@@ -28,26 +28,39 @@
      }
  
      @Override
-@@ -52,19 +_,18 @@
+@@ -52,19 +_,14 @@
              }
          };
          Consumer<Item> consumer1 = set::add;
 -        new BlockModelGenerators(consumer, biconsumer, consumer1).run();
 -        new ItemModelGenerators(biconsumer).run();
-+        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.modId), new ItemModelGenerators(biconsumer, this.modId));
-         List<Block> list = BuiltInRegistries.BLOCK
-             .entrySet()
-             .stream()
+-        List<Block> list = BuiltInRegistries.BLOCK
+-            .entrySet()
+-            .stream()
 -            .filter(p_300706_ -> true)
-+            .filter(p_300706_ -> p_300706_.getKey().location().getNamespace().equals(modId))
-             .map(Entry::getValue)
+-            .map(Entry::getValue)
++        registerModels(new BlockModelGenerators(consumer, biconsumer, consumer1, this.modId), new ItemModelGenerators(biconsumer, this.modId));
++        List<Block> list = getKnownBlocks()
              .filter(p_125117_ -> !map.containsKey(p_125117_))
              .toList();
          if (!list.isEmpty()) {
              throw new IllegalStateException("Missing blockstate definitions for: " + list);
          } else {
 -            BuiltInRegistries.BLOCK.forEach(p_125128_ -> {
-+            BuiltInRegistries.BLOCK.stream().filter(block -> BuiltInRegistries.BLOCK.getKey(block).getNamespace().equals(modId)).forEach(p_125128_ -> {
++            getKnownBlocks().forEach(p_125128_ -> {
                  Item item = Item.BY_BLOCK.get(p_125128_);
                  if (item != null) {
                      if (set.contains(item)) {
+@@ -95,5 +_,12 @@
+     @Override
+     public String getName() {
+         return "Model Definitions";
++    }
++
++    protected java.util.stream.Stream<Block> getKnownBlocks() {
++        return BuiltInRegistries.BLOCK.entrySet()
++                .stream()
++                .filter(block -> block.getKey().location().getNamespace().equals(modId))
++                .map(Entry::getValue);
+     }
+ }
