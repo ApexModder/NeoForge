@@ -9,6 +9,8 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.math.Transformation;
+import com.mojang.serialization.JsonOps;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -20,8 +22,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import com.mojang.math.Transformation;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
 import net.minecraft.client.renderer.block.model.BlockElementRotation;
@@ -490,7 +490,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
             private int tintindex = -1;
             @Nullable
             private TextureSlot texture = null;
-            private float @Nullable[] uvs;
+            private float @Nullable [] uvs;
             private FaceRotation rotation = FaceRotation.ZERO;
             private int color = 0xFFFFFFFF;
             private int blockLight = 0;
@@ -715,9 +715,7 @@ public final class ExtendedModelTemplate extends ModelTemplate {
         }
 
         private void copyFrom(TransformsBuilder builder) {
-            builder.transforms.forEach((ctx, vecBuilder) ->
-                    this.transforms.put(ctx, vecBuilder.copy())
-            );
+            builder.transforms.forEach((ctx, vecBuilder) -> this.transforms.put(ctx, vecBuilder.copy()));
         }
 
         public class TransformVecBuilder {

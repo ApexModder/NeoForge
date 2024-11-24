@@ -5,10 +5,9 @@
 
 package net.neoforged.neoforge.common.extensions;
 
+import java.util.function.UnaryOperator;
 import net.minecraft.data.models.model.ModelTemplate;
 import net.minecraft.data.models.model.TexturedModel;
-
-import java.util.function.UnaryOperator;
 
 public interface ITexturedModelExtension {
     default TexturedModel updateTemplate(UnaryOperator<ModelTemplate> modifier) {
